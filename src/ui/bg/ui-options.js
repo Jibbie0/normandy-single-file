@@ -99,6 +99,8 @@ const githubUserLabel = document.getElementById("githubUserLabel");
 const githubRepositoryLabel = document.getElementById("githubRepositoryLabel");
 const githubBranchLabel = document.getElementById("githubBranchLabel");
 const saveWithCompanionLabel = document.getElementById("saveWithCompanionLabel");
+const saveWithNormandyBackendLabel = document.getElementById("saveWithNormandyBackendLabel");
+const normandyBackendUrlLabel = document.getElementById("normandyBackendUrlLabel");
 const saveToS3Label = document.getElementById("saveToS3Label");
 const S3DomainLabel = document.getElementById("S3DomainLabel");
 const S3RegionLabel = document.getElementById("S3RegionLabel");
@@ -271,6 +273,8 @@ const githubBranchInput = document.getElementById("githubBranchInput");
 const saveWithCompanionInput = document.getElementById("saveWithCompanionInput");
 const sharePageInput = document.getElementById("sharePageInput");
 const saveToFilesystemInput = document.getElementById("saveToFilesystemInput");
+const saveWithNormandyBackendInput = document.getElementById("saveWithNormandyBackendInput");
+const normandyBackendUrlInput = document.getElementById("normandyBackendUrlInput");
 const compressHTMLInput = document.getElementById("compressHTMLInput");
 const insertTextBodyInput = document.getElementById("insertTextBodyInput");
 const insertEmbeddedImageInput = document.getElementById("insertEmbeddedImageInput");
@@ -607,6 +611,10 @@ saveToDropboxInput.addEventListener("click", () => disableDestinationPermissions
 saveWithWebDAVInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveWithMCPInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveToRestFormApiInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
+saveWithNormandyBackendInput.addEventListener("click", () => {
+	normandyBackendUrlInput.disabled = !saveWithNormandyBackendInput.checked;
+	disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]);
+}, false);
 sharePageInput.addEventListener("click", () => disableDestinationPermissions(["clipboardWrite", "nativeMessaging"]), false);
 saveCreatedBookmarksInput.addEventListener("click", saveCreatedBookmarks, false);
 passReferrerOnErrorInput.addEventListener("click", passReferrerOnError, false);
@@ -707,6 +715,8 @@ saveRawPageLabel.textContent = browser.i18n.getMessage("optionSaveRawPage");
 insertMetaCSPLabel.textContent = browser.i18n.getMessage("optionInsertMetaCSP");
 saveToClipboardLabel.textContent = browser.i18n.getMessage("optionSaveToClipboard");
 saveToFilesystemLabel.textContent = browser.i18n.getMessage("optionSaveToFilesystem");
+saveWithNormandyBackendLabel.textContent = "save with Normandy backend";
+normandyBackendUrlLabel.textContent = "Normandy backend URL";
 sharePageLabel.textContent = browser.i18n.getMessage("optionSharePage");
 addProofLabel.textContent = browser.i18n.getMessage("optionAddProof");
 woleetKeyLabel.textContent = browser.i18n.getMessage("optionWoleetKey");
@@ -1071,6 +1081,9 @@ async function refresh(profileName) {
 	githubBranchInput.value = profileOptions.githubBranch;
 	githubBranchInput.disabled = !profileOptions.saveToGitHub;
 	saveWithCompanionInput.checked = profileOptions.saveWithCompanion;
+	saveWithNormandyBackendInput.checked = profileOptions.saveWithNormandyBackend;
+	normandyBackendUrlInput.value = profileOptions.normandyBackendUrl;
+	normandyBackendUrlInput.disabled = !profileOptions.saveWithNormandyBackend;
 	saveToRestFormApiInput.checked = profileOptions.saveToRestFormApi;
 	saveToRestFormApiUrlInput.value = profileOptions.saveToRestFormApiUrl;
 	saveToRestFormApiUrlInput.disabled = !profileOptions.saveToRestFormApi;
@@ -1092,7 +1105,7 @@ async function refresh(profileName) {
 	S3SecretKeyInput.value = profileOptions.S3SecretKey;
 	S3SecretKeyInput.disabled = !profileOptions.saveToS3;
 	sharePageInput.checked = profileOptions.sharePage;
-	saveToFilesystemInput.checked = !profileOptions.saveToGDrive && !profileOptions.saveToGitHub && !profileOptions.saveToS3 && !profileOptions.saveWithCompanion && !profileOptions.saveToClipboard && !profileOptions.saveWithWebDAV && !profileOptions.saveWithMCP && !profileOptions.saveToDropbox && !profileOptions.saveToRestFormApi && !profileOptions.sharePage;
+	saveToFilesystemInput.checked = !profileOptions.saveToGDrive && !profileOptions.saveToGitHub && !profileOptions.saveToS3 && !profileOptions.saveWithCompanion && !profileOptions.saveWithNormandyBackend && !profileOptions.saveToClipboard && !profileOptions.saveWithWebDAV && !profileOptions.saveWithMCP && !profileOptions.saveToDropbox && !profileOptions.saveToRestFormApi && !profileOptions.sharePage;
 	compressHTMLInput.checked = profileOptions.compressHTML;
 	compressCSSInput.checked = profileOptions.compressCSS;
 	groupDuplicateStylesheetsInput.checked = profileOptions.groupDuplicateStylesheets;
@@ -1264,6 +1277,8 @@ async function update() {
 			githubRepository: githubRepositoryInput.value,
 			githubBranch: githubBranchInput.value,
 			saveWithCompanion: saveWithCompanionInput.checked,
+			saveWithNormandyBackend: saveWithNormandyBackendInput.checked,
+			normandyBackendUrl: normandyBackendUrlInput.value,
 			sharePage: sharePageInput.checked,
 			compressHTML: compressHTMLInput.checked,
 			insertTextBody: insertTextBodyInput.checked,

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Sign in to Normandy backend</title>
+	<link rel="stylesheet" href="normandy-sign-in.css">
+</head>
+
+<body>
+	<main>
+		<h1>Normandy backend</h1>
+		<p id="status">Sign in with your Normandy account.</p>
+		<form id="signInForm">
+			<label for="emailInput">Email</label>
+			<input id="emailInput" type="email" autocomplete="username" required>
+			<label for="passwordInput">Password</label>
+			<input id="passwordInput" type="password" autocomplete="current-password" required>
+			<button id="signInButton" type="submit">Sign in</button>
+		</form>
+		<button id="signOutButton" type="button" hidden>Sign out</button>
+		<p class="endpoint">Backend: <span id="backendUrl"></span></p>
+	</main>
+	<script src="../../../lib/chrome-browser-polyfill.js"></script>
+	<script type="module" src="../bg/ui-normandy-sign-in.js"></script>
+</body>
+
+</html>

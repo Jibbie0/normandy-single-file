@@ -31,6 +31,8 @@ const DEFAULT_PROFILE_NAME = "__Default_Settings__";
 const DISABLED_PROFILE_NAME = "__Disabled_Settings__";
 const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
+const NORMANDY_BACKEND_DEVELOPMENT_URL = "http://localhost:4000/api/single-file";
+const NORMANDY_BACKEND_PRODUCTION_URL = "https://normandy-backend.azurewebsites.net/api/single-file";
 
 const IS_NOT_SAFARI = !/Safari/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent) || /Vivaldi/.test(navigator.userAgent) || /OPR/.test(navigator.userAgent);
 const IS_MOBILE_FIREFOX = /Mobile.*Firefox/.test(navigator.userAgent);
@@ -122,6 +124,9 @@ const DEFAULT_CONFIG = {
 	mcpAuthToken: "",
 	saveToGitHub: false,
 	saveToRestFormApi: false,
+	saveWithNormandyBackend: true,
+	normandyBackendUrl: NORMANDY_BACKEND_PRODUCTION_URL,
+	_normandyBackendDefaultApplied: true,
 	saveToS3: false,
 	githubToken: "",
 	githubUser: "",
@@ -273,6 +278,7 @@ export {
 };
 
 async function upgrade() {
+	DEFAULT_CONFIG.normandyBackendUrl = await getDefaultNormandyBackendUrl();
 	const { sync } = await browser.storage.local.get();
 	if (sync) {
 		configStorage = browser.storage.sync;
@@ -302,23 +308,43 @@ async function upgrade() {
 		await configStorage.set({ processInForeground: false });
 	}
 	const profileNames = await getProfileNames();
-	profileNames.map(async profileName => {
+	for (const profileName of profileNames) {
 		const profile = await getProfile(profileName);
 		if (!profile._migratedTemplateFormat) {
 			profile.filenameTemplate = updateFilenameTemplate(profile.filenameTemplate);
 			profile._migratedTemplateFormat = true;
 		}
+		const normandyBackendDefaultApplied = profile._normandyBackendDefaultApplied;
 		for (const key of Object.keys(DEFAULT_CONFIG)) {
 			if (profile[key] === undefined) {
 				profile[key] = DEFAULT_CONFIG[key];
 			}
+		}
+		if ([NORMANDY_BACKEND_DEVELOPMENT_URL, NORMANDY_BACKEND_PRODUCTION_URL].includes(profile.normandyBackendUrl)) {
+			profile.normandyBackendUrl = DEFAULT_CONFIG.normandyBackendUrl;
+		}
+		if (!normandyBackendDefaultApplied) {
+			profile.saveWithNormandyBackend = true;
+			profile._normandyBackendDefaultApplied = true;
 		}
 		if (isSameArray(profile.filenameReplacedCharacters, LEGACY_FILENAME_REPLACED_CHARACTERS)
 			&& isSameArray(profile.filenameReplacementCharacters, DEFAULT_FILENAME_REPLACEMENT_CHARACTERS)) {
 			profile.filenameReplacedCharacters = DEFAULT_FILENAME_REPLACED_CHARACTERS;
 		}
 		await setProfile(profileName, profile);
-	});
+	}
+}
+
+async function getDefaultNormandyBackendUrl() {
+	try {
+		const extensionInfo = await browser.management.getSelf();
+		if (extensionInfo.installType == "development") {
+			return NORMANDY_BACKEND_DEVELOPMENT_URL;
+		}
+	} catch {
+		// Fall back to production when install metadata is unavailable.
+	}
+	return NORMANDY_BACKEND_PRODUCTION_URL;
 }
 
 function updateFilenameTemplate(template) {

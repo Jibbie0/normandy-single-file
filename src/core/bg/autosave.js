@@ -162,7 +162,7 @@ async function saveContent(message, tab) {
 			options.tabId = tabId;
 			pageData = await getPageData(options, { fetch }, null, null);
 			let skipped;
-			if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveWithMCP && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion && !options.saveToRestFormApi && !options.saveToS3) {
+			if (!options.saveToGDrive && !options.saveWithWebDAV && !options.saveWithMCP && !options.saveToGitHub && !options.saveToDropbox && !options.saveWithCompanion && !options.saveWithNormandyBackend && !options.saveToRestFormApi && !options.saveToS3) {
 				const testSkip = await downloads.testSkipSave(pageData.filename, options);
 					skipped = testSkip.skipped;
 					options.filenameConflictAction = testSkip.filenameConflictAction;
@@ -208,6 +208,8 @@ async function saveContent(message, tab) {
 							url: options.url,
 							filenameConflictAction: options.filenameConflictAction
 						});
+					} else if (options.saveWithNormandyBackend) {
+						await downloads.saveWithNormandyBackend(message.taskId, pageData.filename, content, options.url, options.normandyBackendUrl);
 					} else if (options.saveToRestFormApi) {
 						await downloads.saveToRestFormApi(
 							message.taskId,
