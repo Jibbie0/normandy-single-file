@@ -1,11 +1,11 @@
 {
-	"name": "single-file-mv3",
-	"version": "1.0.0",
-	"description": "SingleFile",
+	"name": "normandy-single-file",
+	"version": "1.2.4",
+	"description": "Normandy SingleFile",
 	"author": "Gildas Lormeau",
 	"license": "AGPL-3.0-or-later",
 	"scripts": {
-		"dev": "./build-dev.sh",
+		"dev": "npx rollup -c rollup.config.dev.js",
 		"build": "./build-extension.sh"
 	},
 	"type": "module",
