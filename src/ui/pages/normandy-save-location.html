@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Choose Normandy save location</title>
+	<link rel="stylesheet" href="normandy-sign-in.css">
+</head>
+
+<body>
+	<main>
+		<h1>Save location</h1>
+		<p id="status">Loading save locations…</p>
+		<div id="locations"></div>
+		<p class="endpoint">Backend: <span id="backendUrl"></span></p>
+	</main>
+	<script src="../../../lib/chrome-browser-polyfill.js"></script>
+	<script type="module" src="../bg/ui-normandy-save-location.js"></script>
+</body>
+
+</html>

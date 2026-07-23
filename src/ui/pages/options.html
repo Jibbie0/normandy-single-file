@@ -379,6 +379,18 @@
 				<input type="radio" id="saveWithCompanionInput" name="destinationInput">
 			</div>
 			<div class="option">
+				<label for="saveWithNormandyBackendInput" id="saveWithNormandyBackendLabel"></label>
+				<input type="radio" id="saveWithNormandyBackendInput" name="destinationInput">
+			</div>
+			<div class="option second-level">
+				<label for="normandyBackendUrlInput" id="normandyBackendUrlLabel"></label>
+				<input type="url" id="normandyBackendUrlInput" class="medium-input" list="normandyBackendUrls">
+				<datalist id="normandyBackendUrls">
+					<option value="http://localhost:4000/api/single-file"></option>
+					<option value="https://normandy-backend.azurewebsites.net/api/single-file"></option>
+				</datalist>
+			</div>
+			<div class="option">
 				<label for="saveToRestFormApiInput" id="saveToRestFormApiLabel"></label>
 				<input type="radio" id="saveToRestFormApiInput" name="destinationInput">
 			</div>

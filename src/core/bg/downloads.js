@@ -21,7 +21,7 @@
  *   Source.
  */
 
-/* global browser, fetch, Blob, TextEncoder */
+/* global browser, fetch, Blob, FormData, AbortController, TextEncoder */
 
 import * as config from "./config.js";
 import * as bookmarks from "./bookmarks.js";
@@ -70,6 +70,7 @@ export {
 	saveToDropbox,
 	saveWithWebDAV,
 	saveToRestFormApi,
+	saveWithNormandyBackend,
 	saveToS3,
 	saveWithMCP,
 	encodeSharpCharacter
@@ -197,7 +198,7 @@ async function downloadContent(message, tab) {
 	const tabId = tab.id;
 	try {
 		let skipped;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveToRestFormApi && !message.saveToS3) {
+		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveToGitHub && !message.saveWithNormandyBackend && !message.saveToRestFormApi && !message.saveToS3) {
 			const testSkip = await testSkipSave(message.filename, message);
 			message.filenameConflictAction = testSkip.filenameConflictAction;
 			skipped = testSkip.skipped;
@@ -244,6 +245,8 @@ async function downloadContent(message, tab) {
 					url: message.originalUrl,
 					filenameConflictAction: message.filenameConflictAction
 				});
+			} else if (message.saveWithNormandyBackend) {
+				response = await saveWithNormandyBackend(message.taskId, message.filename, contents.join(""), tab.url, message.normandyBackendUrl);
 			} else if (message.saveToRestFormApi) {
 				response = await saveToRestFormApi(
 					message.taskId,
@@ -315,7 +318,7 @@ async function downloadCompressedContent(message, tab) {
 	try {
 		const prompt = filename => promptFilename(tabId, filename);
 		let skipped, response;
-		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveWithMCP && !message.saveToGitHub && !message.saveToRestFormApi && !message.sharePage) {
+		if (message.backgroundSave && !message.saveToGDrive && !message.saveToDropbox && !message.saveWithWebDAV && !message.saveWithMCP && !message.saveToGitHub && !message.saveWithNormandyBackend && !message.saveToRestFormApi && !message.sharePage) {
 			const testSkip = await testSkipSave(message.filename, message);
 			message.filenameConflictAction = testSkip.filenameConflictAction;
 			skipped = testSkip.skipped;
@@ -389,6 +392,8 @@ async function downloadCompressedContent(message, tab) {
 					prompt
 				});
 				await response.pushPromise;
+			} else if (message.saveWithNormandyBackend) {
+				response = await saveWithNormandyBackend(message.taskId, message.filename, blob, tab.url, message.normandyBackendUrl);
 			} else if (message.saveToRestFormApi) {
 				const blob = await (await fetch(blobURI)).blob();
 				response = await saveToRestFormApi(
@@ -693,4 +698,75 @@ async function downloadPageForeground(taskId, filename, content, mimeType, tabId
 		});
 	}
 	return browser.tabs.sendMessage(tabId, { method: "content.download" });
+}
+
+async function saveWithNormandyBackend(taskId, filename, content, sourceUrl, backendUrl) {
+	const controller = new AbortController();
+	try {
+		if (!backendUrl) {
+			throw new Error("Backend URL is required");
+		}
+		const taskInfo = business.getTaskInfo(taskId);
+		if (taskInfo && taskInfo.cancelled) {
+			return;
+		}
+		business.setCancelCallback(taskId, () => controller.abort());
+		const formData = new FormData();
+		const uploadContent = typeof content == "string" ? addOriginalUrlLink(content, sourceUrl) : content;
+		const blob = uploadContent instanceof Blob ? uploadContent : new Blob([uploadContent], { type: "text/html" });
+		formData.append("file", blob, filename);
+		formData.append("url", sourceUrl);
+		const { normandyAuth, normandySaveLocation } = await browser.storage.local.get(["normandyAuth", "normandySaveLocation"]);
+		if (normandySaveLocation && normandySaveLocation.msLink) {
+			formData.append("msLink", normandySaveLocation.msLink);
+		}
+		const headers = {};
+		if (normandyAuth && normandyAuth.token) {
+			headers.Authorization = `Bearer ${normandyAuth.token}`;
+		}
+		const response = await fetch(backendUrl, {
+			method: "POST",
+			body: formData,
+			headers,
+			signal: controller.signal
+		});
+		if (!response.ok) {
+			throw new Error((await response.text()) || `HTTP ${response.status}`);
+		}
+		const responseText = await response.text();
+		try {
+			return responseText ? JSON.parse(responseText) : {};
+		} catch {
+			return { message: responseText };
+		}
+	} catch (error) {
+		throw new Error(error.message + " (Normandy backend)");
+	}
+}
+
+function addOriginalUrlLink(content, sourceUrl) {
+	if (!sourceUrl) {
+		return content;
+	}
+	const escapedUrl = escapeHtml(sourceUrl);
+	const originalUrlElement =
+		`<p data-normandy-original-url="true">` +
+		`<strong>Original page:</strong> ` +
+		`<a href="${escapedUrl}">${escapedUrl}</a>` +
+		`</p>`;
+	const bodyMatch = content.match(/<body(?:\s[^>]*)?>/i);
+	if (bodyMatch) {
+		const insertIndex = bodyMatch.index + bodyMatch[0].length;
+		return content.slice(0, insertIndex) + originalUrlElement + content.slice(insertIndex);
+	}
+	return originalUrlElement + content;
+}
+
+function escapeHtml(value) {
+	return String(value)
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&#39;");
 }
