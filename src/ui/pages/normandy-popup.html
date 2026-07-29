@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Save with Normandy SingleFile</title>
+	<link rel="stylesheet" href="normandy-popup.css">
+</head>
+
+<body>
+	<main>
+		<h1>Normandy SingleFile</h1>
+
+		<form id="loginForm" hidden>
+			<label for="usernameInput">Username</label>
+			<input id="usernameInput" type="text" autocomplete="username" required>
+
+			<label for="passwordInput">Password</label>
+			<input id="passwordInput" type="password" autocomplete="current-password" required>
+
+			<button id="loginButton" type="submit">Log in</button>
+		</form>
+
+		<form id="saveForm" hidden>
+			<label for="clientSelect">Client</label>
+			<select id="clientSelect" required disabled>
+				<option value="">Loading clients...</option>
+			</select>
+
+			<label for="itemSelect">Item</label>
+			<select id="itemSelect" required disabled>
+				<option value="">Select a client first</option>
+			</select>
+
+			<button id="saveButton" type="submit" disabled>Save</button>
+		</form>
+
+		<p id="status" role="status" aria-live="polite"></p>
+	</main>
+
+	<script src="../../../lib/chrome-browser-polyfill.js"></script>
+	<script type="module" src="../bg/ui-normandy-popup.js"></script>
+</body>
+
+</html>

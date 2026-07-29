@@ -1,0 +1,63 @@
+:root {
+	color-scheme: light dark;
+	font: menu;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+body {
+	width: 320px;
+	margin: 0;
+	background: Canvas;
+	color: CanvasText;
+}
+
+main,
+form {
+	display: grid;
+	gap: 8px;
+}
+
+main {
+	padding: 16px;
+}
+
+h1 {
+	margin: 0 0 8px;
+	font-size: 18px;
+}
+
+label {
+	margin-top: 4px;
+	font-weight: 600;
+}
+
+input,
+select,
+button {
+	width: 100%;
+	min-height: 36px;
+	padding: 7px 9px;
+	font: inherit;
+}
+
+button {
+	margin-top: 8px;
+	font-weight: 600;
+}
+
+#status {
+	min-height: 18px;
+	margin: 8px 0 0;
+	font-size: 12px;
+}
+
+#status.error {
+	color: #c62828;
+}

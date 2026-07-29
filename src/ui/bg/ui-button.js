@@ -150,6 +150,9 @@ function init(businessApi) {
 }
 
 function onMessage(message, sender) {
+	if (message.method == "ui.normandyPopup.save") {
+		return saveFromPopup(message.selection);
+	}
 	if (message.method.endsWith(".processInit")) {
 		const allTabsData = tabsData.getTemporary(sender.tab.id);
 		delete allTabsData[sender.tab.id].button;
@@ -173,6 +176,25 @@ function onMessage(message, sender) {
 		onCancelled(sender.tab);
 	}
 	return Promise.resolve({});
+}
+
+async function saveFromPopup(selection) {
+	if (!selection || !selection.folderName || !selection.subFolderName) {
+		return { started: false, error: "Select both a client and an item." };
+	}
+	const [tab] = await queryTabs({ active: true, currentWindow: true });
+	if (!tab) {
+		return { started: false, error: "No active tab was found." };
+	}
+	if (business.isSavingTab(tab)) {
+		return { started: false, error: "This page is already being saved." };
+	}
+	await business.saveTabs([tab], {
+		saveWithNormandyBackend: true,
+		normandyFolderName: selection.folderName,
+		normandySubfolderName: selection.subFolderName
+	});
+	return { started: true };
 }
 
 function onStart(tabId, step, autoSave) {
