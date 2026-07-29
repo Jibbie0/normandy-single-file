@@ -59,6 +59,7 @@ const MENU_ID_AUTO_SAVE_UNPINNED = "auto-save-unpinned";
 const MENU_ID_AUTO_SAVE_ALL = "auto-save-all";
 const MENU_ID_NORMANDY_SIGN_IN = "normandy-sign-in";
 const MENU_ID_NORMANDY_SAVE_LOCATION = "normandy-save-location";
+const MENU_ID_EXTRA = "extra";
 const MENU_CREATE_DOMAIN_RULE_MESSAGE = browser.i18n.getMessage("menuCreateDomainRule");
 const MENU_UPDATE_RULE_MESSAGE = browser.i18n.getMessage("menuUpdateRule");
 const MENU_SAVE_PAGE_MESSAGE = browser.i18n.getMessage("menuSavePage");
@@ -147,50 +148,63 @@ async function createMenus(tab) {
 		const defaultContextsEnabled = defaultContextsDisabled.concat(...pageContextsEnabled);
 		const defaultContexts = options.contextMenuEnabled ? defaultContextsEnabled : defaultContextsDisabled;
 		menus.create({
+			id: MENU_ID_EXTRA,
+			contexts: defaultContexts,
+			title: "Extra"
+		});
+		menus.create({
 			id: MENU_ID_SAVE_PAGE,
 			contexts: defaultContexts,
-			title: MENU_SAVE_PAGE_MESSAGE
+			title: MENU_SAVE_PAGE_MESSAGE,
+			parentId: MENU_ID_EXTRA
 		});
 		menus.create({
 			id: MENU_ID_EDIT_AND_SAVE_PAGE,
 			contexts: defaultContexts,
-			title: MENU_EDIT_AND_SAVE_PAGE_MESSAGE
+			title: MENU_EDIT_AND_SAVE_PAGE_MESSAGE,
+			parentId: MENU_ID_EXTRA
 		});
 		menus.create({
 			id: MENU_ID_SAVE_SELECTED_LINKS,
 			contexts: options.contextMenuEnabled ? defaultContextsDisabled.concat(["selection"]) : defaultContextsDisabled,
-			title: MENU_SAVE_SELECTED_LINKS
+			title: MENU_SAVE_SELECTED_LINKS,
+			parentId: MENU_ID_EXTRA
 		});
 		if (Object.keys(profiles).length > 1) {
 			menus.create({
 				id: MENU_ID_SAVE_WITH_PROFILE,
 				contexts: defaultContexts,
-				title: MENU_SAVE_WITH_PROFILE
+				title: MENU_SAVE_WITH_PROFILE,
+				parentId: MENU_ID_EXTRA
 			});
 		}
 		if (options.contextMenuEnabled) {
 			menus.create({
 				id: "separator-1",
 				contexts: pageContextsEnabled,
-				type: "separator"
+				type: "separator",
+				parentId: MENU_ID_EXTRA
 			});
 		}
 		menus.create({
 			id: MENU_ID_SAVE_SELECTED,
 			contexts: defaultContexts,
-			title: MENU_SAVE_SELECTION_MESSAGE
+			title: MENU_SAVE_SELECTION_MESSAGE,
+			parentId: MENU_ID_EXTRA
 		});
 		if (options.contextMenuEnabled) {
 			menus.create({
 				id: MENU_ID_SAVE_FRAME,
 				contexts: ["frame"],
-				title: MENU_SAVE_FRAME_MESSAGE
+				title: MENU_SAVE_FRAME_MESSAGE,
+				parentId: MENU_ID_EXTRA
 			});
 		}
 		menus.create({
 			id: MENU_ID_SAVE_TABS,
 			contexts: defaultContextsDisabled,
-			title: MENU_SAVE_TABS_MESSAGE
+			title: MENU_SAVE_TABS_MESSAGE,
+			parentId: MENU_ID_EXTRA
 		});
 		menus.create({
 			id: MENU_ID_BUTTON_SAVE_SELECTED_TABS,
@@ -215,23 +229,27 @@ async function createMenus(tab) {
 				menus.create({
 					id: MENU_ID_SAVE_SELECTED_TABS,
 					contexts: pageContextsEnabled,
-					title: MENU_SAVE_SELECTED_TABS_MESSAGE
+					title: MENU_SAVE_SELECTED_TABS_MESSAGE,
+					parentId: MENU_ID_EXTRA
 				});
 			}
 			menus.create({
 				id: MENU_ID_SAVE_UNPINNED_TABS,
 				contexts: pageContextsEnabled,
-				title: MENU_SAVE_UNPINNED_TABS_MESSAGE
+				title: MENU_SAVE_UNPINNED_TABS_MESSAGE,
+				parentId: MENU_ID_EXTRA
 			});
 			menus.create({
 				id: MENU_ID_SAVE_ALL_TABS,
 				contexts: pageContextsEnabled,
-				title: MENU_SAVE_ALL_TABS_MESSAGE
+				title: MENU_SAVE_ALL_TABS_MESSAGE,
+				parentId: MENU_ID_EXTRA
 			});
 			menus.create({
 				id: "separator-2",
 				contexts: pageContextsEnabled,
-				type: "separator"
+				type: "separator",
+				parentId: MENU_ID_EXTRA
 			});
 		}
 		if (Object.keys(profiles).length > 1) {
@@ -239,6 +257,7 @@ async function createMenus(tab) {
 				id: MENU_ID_SELECT_PROFILE,
 				title: MENU_SELECT_PROFILE_MESSAGE,
 				contexts: defaultContexts,
+				parentId: MENU_ID_EXTRA
 			});
 			menus.create({
 				id: MENU_ID_SAVE_WITH_PROFILE_PREFIX + "default",
@@ -261,6 +280,7 @@ async function createMenus(tab) {
 				id: MENU_ID_ASSOCIATE_WITH_PROFILE,
 				title: MENU_CREATE_DOMAIN_RULE_MESSAGE,
 				contexts: defaultContexts,
+				parentId: MENU_ID_EXTRA
 			});
 			menusTitleState.set(MENU_ID_ASSOCIATE_WITH_PROFILE, MENU_CREATE_DOMAIN_RULE_MESSAGE);
 			let rule;
@@ -329,7 +349,8 @@ async function createMenus(tab) {
 				menus.create({
 					id: "separator-3",
 					contexts: pageContextsEnabled,
-					type: "separator"
+					type: "separator",
+					parentId: MENU_ID_EXTRA
 				});
 			}
 		}
@@ -337,7 +358,8 @@ async function createMenus(tab) {
 			menus.create({
 				id: MENU_ID_AUTO_SAVE,
 				contexts: defaultContexts,
-				title: MENU_AUTOSAVE_MESSAGE
+				title: MENU_AUTOSAVE_MESSAGE,
+				parentId: MENU_ID_EXTRA
 			});
 			menus.create({
 				id: MENU_ID_AUTO_SAVE_DISABLED,
@@ -378,28 +400,33 @@ async function createMenus(tab) {
 			menus.create({
 				id: "separator-4",
 				contexts: defaultContexts,
-				type: "separator"
+				type: "separator",
+				parentId: MENU_ID_EXTRA
 			});
 		}
 		menus.create({
 			id: MENU_ID_BATCH_SAVE_URLS,
 			contexts: defaultContexts,
-			title: MENU_BATCH_SAVE_URLS_MESSAGE
+			title: MENU_BATCH_SAVE_URLS_MESSAGE,
+			parentId: MENU_ID_EXTRA
 		});
 		menus.create({
 			id: MENU_ID_VIEW_PENDINGS,
 			contexts: defaultContexts,
-			title: MENU_VIEW_PENDINGS_MESSAGE
+			title: MENU_VIEW_PENDINGS_MESSAGE,
+			parentId: MENU_ID_EXTRA
 		});
 		menus.create({
 			id: MENU_ID_NORMANDY_SIGN_IN,
 			contexts: defaultContexts,
-			title: "Sign in to Normandy backend"
+			title: "Sign in to Normandy backend",
+			parentId: MENU_ID_EXTRA
 		});
 		menus.create({
 			id: MENU_ID_NORMANDY_SAVE_LOCATION,
 			contexts: defaultContexts,
-			title: "Choose Normandy save location"
+			title: "Choose Normandy save location",
+			parentId: MENU_ID_EXTRA
 		});
 	}
 	menusCreated = true;

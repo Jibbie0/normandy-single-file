@@ -113,6 +113,8 @@ async function downloadPage(pageData, options) {
 		saveToRestFormApi: options.saveToRestFormApi,
 		saveWithNormandyBackend: options.saveWithNormandyBackend,
 		normandyBackendUrl: options.normandyBackendUrl,
+		normandyFolderName: options.normandyFolderName,
+		normandySubfolderName: options.normandySubfolderName,
 		saveToRestFormApiUrl: options.saveToRestFormApiUrl,
 		saveToRestFormApiFileFieldName: options.saveToRestFormApiFileFieldName,
 		saveToRestFormApiUrlFieldName: options.saveToRestFormApiUrlFieldName,
