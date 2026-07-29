@@ -1,12 +1,13 @@
 {
-	"name": "normandy-single-file",
+	"name": "nb-clipper",
 	"version": "1.2.4",
-	"description": "Normandy SingleFile",
+	"description": "NB Clipper",
 	"author": "Gildas Lormeau",
 	"license": "AGPL-3.0-or-later",
 	"scripts": {
 		"dev": "npx rollup -c rollup.config.dev.js",
-		"build": "./build-extension.sh"
+		"build": "./build-extension.sh",
+		"build:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File ./build-extension.ps1"
 	},
 	"type": "module",
 	"dependencies": {
