@@ -1,7 +1,7 @@
-# Normandy SingleFile
+# NB Clipper
 
-Normandy SingleFile helps you to save a complete web page into a single HTML
-file. Normandy SingleFile is a Web Extension (and a CLI tool) compatible with Chrome, Firefox
+NB Clipper helps you to save a complete web page into a single HTML
+file. NB Clipper is a Web Extension (and a CLI tool) compatible with Chrome, Firefox
 (Desktop and Mobile), Microsoft Edge, Safari, Vivaldi, Brave, Waterfox, Yandex
 browser, and Opera.
 
