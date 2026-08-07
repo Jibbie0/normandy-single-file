@@ -200,6 +200,7 @@ async function saveContent(message, tab) {
 							filenameConflictAction: options.filenameConflictAction
 						});
 					} else if (options.saveWithNormandyBackend) {
+						const content = await (await fetch(pageData.url)).blob();
 						await downloads.saveWithNormandyBackend(message.taskId, pageData.filename, content, options.url, options.normandyBackendUrl);
 					} else if (options.saveToRestFormApi) {
 						const content = await (await fetch(pageData.url)).blob();
