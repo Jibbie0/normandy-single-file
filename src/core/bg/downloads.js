@@ -246,7 +246,7 @@ async function downloadContent(message, tab) {
 					filenameConflictAction: message.filenameConflictAction
 				});
 			} else if (message.saveWithNormandyBackend) {
-				response = await saveWithNormandyBackend(message.taskId, message.filename, contents.join(""), tab.url, message.normandyBackendUrl, message.normandyFolderName, message.normandySubfolderName);
+				response = await saveWithNormandyBackend(message.taskId, message.filename, message.content, tab.url, message.normandyBackendUrl, message.normandyFolderName, message.normandySubfolderName);
 			} else if (message.saveToRestFormApi) {
 				response = await saveToRestFormApi(
 					message.taskId,
