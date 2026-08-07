@@ -1,13 +1,12 @@
 /* global browser, document, fetch */
 
-const DEVELOPMENT_BACKEND_URL = "http://localhost:4000/api";
-const PRODUCTION_BACKEND_URL = "https://normandy-backend.azurewebsites.net/api";
+import { NORMANDY_BACKEND_URL } from "virtual:normandy-env";
 
 const status = document.getElementById("status");
 const locations = document.getElementById("locations");
 const backendUrlOutput = document.getElementById("backendUrl");
 
-const backendUrl = await getBackendUrl();
+const backendUrl = NORMANDY_BACKEND_URL;
 backendUrlOutput.textContent = backendUrl;
 await loadLocations();
 
@@ -65,18 +64,6 @@ function renderLocations(items, selectedLocation) {
 		});
 		locations.append(button);
 	}
-}
-
-async function getBackendUrl() {
-	try {
-		const extensionInfo = await browser.management.getSelf();
-		if (extensionInfo.installType == "development") {
-			return DEVELOPMENT_BACKEND_URL;
-		}
-	} catch {
-		// Use production when install metadata is unavailable.
-	}
-	return PRODUCTION_BACKEND_URL;
 }
 
 function setStatus(message, state) {

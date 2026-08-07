@@ -25,6 +25,7 @@
 
 import { download } from "./download-util.js";
 import * as tabsData from "./tabs-data.js";
+import { NORMANDY_BACKEND_URL } from "virtual:normandy-env";
 
 const CURRENT_PROFILE_NAME = "-";
 const DEFAULT_PROFILE_NAME = "__Default_Settings__";
@@ -33,8 +34,7 @@ const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
 const EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY = "externalCaptureAllowedExtensionIds";
 const EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY = "externalCaptureDeniedExtensionIds";
-const NORMANDY_BACKEND_DEVELOPMENT_URL = "http://localhost:4000/api/single-file";
-const NORMANDY_BACKEND_PRODUCTION_URL = "https://normandy-backend.azurewebsites.net/api/single-file";
+const NORMANDY_BACKEND_API_URL = `${NORMANDY_BACKEND_URL}/single-file`;
 
 const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
 const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });
@@ -114,7 +114,7 @@ const DEFAULT_CONFIG = {
 	saveToGitHub: false,
 	saveToRestFormApi: false,
 	saveWithNormandyBackend: true,
-	normandyBackendUrl: NORMANDY_BACKEND_PRODUCTION_URL,
+	normandyBackendUrl: NORMANDY_BACKEND_API_URL,
 	_normandyBackendDefaultApplied: true,
 	saveToS3: false,
 	githubToken: "",
@@ -306,9 +306,7 @@ async function upgrade() {
 				profile[key] = DEFAULT_CONFIG[key];
 			}
 		}
-		if ([NORMANDY_BACKEND_DEVELOPMENT_URL, NORMANDY_BACKEND_PRODUCTION_URL].includes(profile.normandyBackendUrl)) {
-			profile.normandyBackendUrl = DEFAULT_CONFIG.normandyBackendUrl;
-		}
+		profile.normandyBackendUrl = NORMANDY_BACKEND_API_URL;
 		if (!normandyBackendDefaultApplied) {
 			profile.saveWithNormandyBackend = true;
 			profile._normandyBackendDefaultApplied = true;
@@ -322,15 +320,7 @@ async function upgrade() {
 }
 
 async function getDefaultNormandyBackendUrl() {
-	try {
-		const extensionInfo = await browser.management.getSelf();
-		if (extensionInfo.installType == "development") {
-			return NORMANDY_BACKEND_DEVELOPMENT_URL;
-		}
-	} catch {
-		// Fall back to production when install metadata is unavailable.
-	}
-	return NORMANDY_BACKEND_PRODUCTION_URL;
+	return NORMANDY_BACKEND_API_URL;
 }
 
 function updateFilenameTemplate(template) {
