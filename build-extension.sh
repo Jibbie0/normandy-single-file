@@ -23,7 +23,7 @@ npm update
 
 npx rollup -c rollup.config.js
 
-zip -r nb-clipper-source.zip manifest.json package.json _locales src rollup*.js eslint.config.mjs build-extension.sh
+zip -r nb-clipper-source.zip .env manifest.json package.json _locales src rollup*.js eslint.config.mjs build-extension.sh
 
 rm -f nb-clipper-firefox.zip
 

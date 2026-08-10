@@ -1,7 +1,7 @@
 /* global browser, document, fetch, window */
 
-const DEVELOPMENT_API_URL = "http://localhost:4000/api";
-const PRODUCTION_API_URL = "https://normandy-backend.azurewebsites.net/api";
+import { NORMANDY_BACKEND_URL } from "virtual:normandy-env";
+
 const OTHER_ITEM_VALUE = "__other__";
 
 const loginForm = document.getElementById("loginForm");
@@ -29,7 +29,7 @@ customItemInput.addEventListener("input", refreshSaveButton);
 initialize();
 
 async function initialize() {
-	apiUrl = await getApiUrl();
+	apiUrl = NORMANDY_BACKEND_URL;
 	const stored = await browser.storage.local.get(["nbClipperAuth", "nbClipperPopupSelection"]);
 	auth = stored.nbClipperAuth;
 	savedSelection = stored.nbClipperPopupSelection;
@@ -284,18 +284,6 @@ function setSavePending(pending) {
 	if (!pending) {
 		refreshSaveButton();
 	}
-}
-
-async function getApiUrl() {
-	try {
-		const extensionInfo = await browser.management.getSelf();
-		if (extensionInfo.installType == "development") {
-			return DEVELOPMENT_API_URL;
-		}
-	} catch {
-		// Use production when install metadata is unavailable.
-	}
-	return PRODUCTION_API_URL;
 }
 
 function setStatus(message, error) {

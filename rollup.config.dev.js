@@ -1,7 +1,32 @@
 import resolve from "@rollup/plugin-node-resolve";
 import terser from "@rollup/plugin-terser";
+import { readFileSync } from "node:fs";
 
-const PLUGINS = [resolve({ moduleDirectories: [".."] })];
+const ENV = Object.fromEntries(readFileSync(new URL(".env", import.meta.url), "utf8")
+	.split(/\r?\n/)
+	.map(line => line.trim())
+	.filter(line => line && !line.startsWith("#"))
+	.map(line => {
+		const separatorIndex = line.indexOf("=");
+		return [line.slice(0, separatorIndex), line.slice(separatorIndex + 1)];
+	}));
+if (!ENV.NORMANDY_BACKEND_URL) {
+	throw new Error("NORMANDY_BACKEND_URL is not set in .env");
+}
+
+const normandyEnvPlugin = {
+	name: "normandy-env",
+	resolveId(id) {
+		return id == "virtual:normandy-env" ? `\0${id}` : null;
+	},
+	load(id) {
+		return id == "\0virtual:normandy-env"
+			? `export const NORMANDY_BACKEND_URL = ${JSON.stringify(ENV.NORMANDY_BACKEND_URL.replace(/\/$/, ""))};`
+			: null;
+	}
+};
+
+const PLUGINS = [normandyEnvPlugin, resolve({ moduleDirectories: ["node_modules"] })];
 const EXTERNAL = ["single-file-core"];
 
 export default [{
@@ -142,7 +167,32 @@ export default [{
 		file: "lib/single-file-extension-background.js",
 		format: "iife",
 		plugins: []
-	}]
+	}],
+	plugins: PLUGINS
+}, {
+	input: ["src/ui/bg/ui-nb-clipper-popup.js"],
+	output: [{
+		file: "lib/ui-nb-clipper-popup.js",
+		format: "iife",
+		plugins: []
+	}],
+	plugins: PLUGINS
+}, {
+	input: ["src/ui/bg/ui-nb-clipper-sign-in.js"],
+	output: [{
+		file: "lib/ui-nb-clipper-sign-in.js",
+		format: "es",
+		plugins: []
+	}],
+	plugins: PLUGINS
+}, {
+	input: ["src/ui/bg/ui-nb-clipper-save-location.js"],
+	output: [{
+		file: "lib/ui-nb-clipper-save-location.js",
+		format: "es",
+		plugins: []
+	}],
+	plugins: PLUGINS
 }, {
 	input: ["src/lib/single-file/background.js"],
 	output: [{
