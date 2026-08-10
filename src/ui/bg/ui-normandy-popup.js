@@ -2,6 +2,7 @@
 
 const DEVELOPMENT_API_URL = "http://localhost:4000/api";
 const PRODUCTION_API_URL = "https://normandy-backend.azurewebsites.net/api";
+const OTHER_ITEM_VALUE = "__other__";
 
 const loginForm = document.getElementById("loginForm");
 const usernameInput = document.getElementById("usernameInput");
@@ -10,6 +11,8 @@ const loginButton = document.getElementById("loginButton");
 const saveForm = document.getElementById("saveForm");
 const clientSelect = document.getElementById("clientSelect");
 const itemSelect = document.getElementById("itemSelect");
+const customItemFields = document.getElementById("customItemFields");
+const customItemInput = document.getElementById("customItemInput");
 const saveButton = document.getElementById("saveButton");
 const status = document.getElementById("status");
 
@@ -20,7 +23,8 @@ let savedSelection;
 loginForm.addEventListener("submit", login);
 saveForm.addEventListener("submit", savePage);
 clientSelect.addEventListener("change", clientChanged);
-itemSelect.addEventListener("change", refreshSaveButton);
+itemSelect.addEventListener("change", itemChanged);
+customItemInput.addEventListener("input", refreshSaveButton);
 
 initialize();
 
@@ -62,7 +66,8 @@ async function showSaveForm() {
 			savedSelection && (savedSelection.folderName || savedSelection.client));
 		setStatus("");
 		if (clientSelect.value) {
-			await loadItems(clientSelect.value, savedSelection && savedSelection.item);
+			await loadItems(clientSelect.value, savedSelection &&
+				(savedSelection.subFolderName || savedSelection.item));
 		}
 	} catch (error) {
 		await handleRequestError(error, "Could not load clients.");
@@ -116,6 +121,7 @@ async function login(event) {
 async function clientChanged() {
 	const client = clientSelect.value;
 	saveButton.disabled = true;
+	hideCustomItemInput();
 	if (!client) {
 		setSelectMessage(itemSelect, "Select a client first");
 		return;
@@ -132,8 +138,14 @@ async function loadItems(client, selectedItem) {
 			["subFolderName", "_id"],
 			"items");
 		fillSelect(itemSelect, items, "Select an item", selectedItem);
+		itemSelect.add(new Option("Other", OTHER_ITEM_VALUE));
+		itemSelect.disabled = false;
+		if (selectedItem && !items.some(item => item.value == selectedItem)) {
+			itemSelect.value = OTHER_ITEM_VALUE;
+			customItemInput.value = selectedItem;
+		}
+		itemChanged();
 		setStatus("");
-		refreshSaveButton();
 	} catch (error) {
 		await handleRequestError(error, "Could not load items.");
 	}
@@ -199,8 +211,28 @@ function setSelectMessage(select, message) {
 	select.disabled = true;
 }
 
+function itemChanged() {
+	const customItemSelected = itemSelect.value == OTHER_ITEM_VALUE;
+	customItemFields.hidden = !customItemSelected;
+	customItemInput.required = customItemSelected;
+	if (customItemSelected) {
+		customItemInput.focus();
+	} else {
+		customItemInput.value = "";
+	}
+	refreshSaveButton();
+}
+
+function hideCustomItemInput() {
+	customItemFields.hidden = true;
+	customItemInput.required = false;
+	customItemInput.value = "";
+}
+
 function refreshSaveButton() {
-	saveButton.disabled = !clientSelect.value || !itemSelect.value;
+	const itemName = itemSelect.value == OTHER_ITEM_VALUE ?
+		customItemInput.value.trim() : itemSelect.value;
+	saveButton.disabled = !clientSelect.value || !itemName;
 }
 
 async function savePage(event) {
@@ -208,9 +240,11 @@ async function savePage(event) {
 	setSavePending(true);
 	setStatus("Starting save...");
 	try {
+		const itemName = itemSelect.value == OTHER_ITEM_VALUE ?
+			customItemInput.value.trim() : itemSelect.value;
 		const selection = {
 			folderName: clientSelect.value,
-			subFolderName: itemSelect.value
+			subFolderName: itemName
 		};
 		await browser.storage.local.set({ normandyPopupSelection: selection });
 		const response = await browser.runtime.sendMessage({
@@ -245,6 +279,7 @@ function setLoginPending(pending) {
 function setSavePending(pending) {
 	clientSelect.disabled = pending;
 	itemSelect.disabled = pending;
+	customItemInput.disabled = pending;
 	saveButton.disabled = pending;
 	if (!pending) {
 		refreshSaveButton();
