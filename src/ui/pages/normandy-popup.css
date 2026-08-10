@@ -19,7 +19,8 @@ body {
 }
 
 main,
-form {
+form,
+#customItemFields {
 	display: grid;
 	gap: 8px;
 }
