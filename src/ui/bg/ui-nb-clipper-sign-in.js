@@ -33,13 +33,13 @@ form.addEventListener("submit", async event => {
 		if (!response.ok || !responseBody.token) {
 			throw new Error(responseBody.message || `Sign-in failed (HTTP ${response.status}).`);
 		}
-		const { normandyAuth } = await browser.storage.local.get("normandyAuth");
+		const { nbClipperAuth } = await browser.storage.local.get("nbClipperAuth");
 		const email = responseBody.email || emailInput.value.trim();
-		if (normandyAuth && normandyAuth.email != email) {
-			await browser.storage.local.remove("normandySaveLocation");
+		if (nbClipperAuth && nbClipperAuth.email != email) {
+			await browser.storage.local.remove("nbClipperSaveLocation");
 		}
 		await browser.storage.local.set({
-			normandyAuth: {
+			nbClipperAuth: {
 				token: responseBody.token,
 				email
 			}
@@ -54,19 +54,19 @@ form.addEventListener("submit", async event => {
 });
 
 signOutButton.addEventListener("click", async () => {
-	await browser.storage.local.remove(["normandyAuth", "normandySaveLocation"]);
+	await browser.storage.local.remove(["nbClipperAuth", "nbClipperSaveLocation"]);
 	emailInput.value = "";
 	passwordInput.value = "";
 	await refresh();
 });
 
 async function refresh() {
-	const { normandyAuth } = await browser.storage.local.get("normandyAuth");
-	const signedIn = Boolean(normandyAuth && normandyAuth.token);
+	const { nbClipperAuth } = await browser.storage.local.get("nbClipperAuth");
+	const signedIn = Boolean(nbClipperAuth && nbClipperAuth.token);
 	form.hidden = signedIn;
 	signOutButton.hidden = !signedIn;
 	if (signedIn) {
-		setStatus(`Signed in as ${normandyAuth.email}.`, "success");
+		setStatus(`Signed in as ${nbClipperAuth.email}.`, "success");
 	} else {
 		setStatus("Sign in with your Normandy account.");
 	}

@@ -23,9 +23,9 @@ npm update
 
 ./build.sh
 
-rm singlefile-extension-chromium.zip singlefile-extension-edge.zip
+rm nb-clipper-chromium.zip nb-clipper-edge.zip
 
-zip -r singlefile-extension-chromium.zip manifest.json lib _locales src
+zip -r nb-clipper-chromium.zip manifest.json lib _locales src
 
 cp src/core/bg/config.js config.copy.js
 cp manifest.json manifest.copy.json
@@ -35,7 +35,7 @@ sed -i "" 's/image\/avif,//g' src/core/bg/config.js
 # config.js is bundled into lib/ by rollup, so it must be rebuilt for the patches
 # above to reach the code that actually runs
 ./build.sh
-zip -r singlefile-extension-edge.zip manifest.json lib _locales src
+zip -r nb-clipper-edge.zip manifest.json lib _locales src
 mv config.copy.js src/core/bg/config.js
 mv manifest.copy.json manifest.json
 # restore lib/ to the unpatched build kept in the repository

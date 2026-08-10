@@ -34,7 +34,7 @@ const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
 const EXTERNAL_CAPTURE_ALLOWED_EXTENSION_IDS_KEY = "externalCaptureAllowedExtensionIds";
 const EXTERNAL_CAPTURE_DENIED_EXTENSION_IDS_KEY = "externalCaptureDeniedExtensionIds";
-const NORMANDY_BACKEND_API_URL = `${NORMANDY_BACKEND_URL}/single-file`;
+const NORMANDY_BACKEND_API_URL = `${NORMANDY_BACKEND_URL}/nb-clipper`;
 
 const BACKGROUND_SAVE_SUPPORTED = !(/Mobile.*Firefox/.test(navigator.userAgent));
 const SHARE_API_SUPPORTED = navigator.canShare && navigator.canShare({ files: [new File([new Blob([""], { type: "text/html" })], "test.html")] });

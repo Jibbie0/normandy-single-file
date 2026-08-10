@@ -30,14 +30,14 @@ initialize();
 
 async function initialize() {
 	apiUrl = NORMANDY_BACKEND_URL;
-	const stored = await browser.storage.local.get(["normandyAuth", "normandyPopupSelection"]);
-	auth = stored.normandyAuth;
-	savedSelection = stored.normandyPopupSelection;
+	const stored = await browser.storage.local.get(["nbClipperAuth", "nbClipperPopupSelection"]);
+	auth = stored.nbClipperAuth;
+	savedSelection = stored.nbClipperPopupSelection;
 	if (auth && isCurrentJwt(auth.token)) {
 		await showSaveForm();
 	} else {
 		if (auth) {
-			await browser.storage.local.remove("normandyAuth");
+			await browser.storage.local.remove("nbClipperAuth");
 		}
 		showLoginForm();
 	}
@@ -102,13 +102,13 @@ async function login(event) {
 			username: body.username || username,
 			email: body.email || username
 		};
-		const stored = await browser.storage.local.get("normandyAuth");
-		if (stored.normandyAuth &&
-			(stored.normandyAuth.username || stored.normandyAuth.email) != (auth.username || auth.email)) {
-			await browser.storage.local.remove(["normandySaveLocation", "normandyPopupSelection"]);
+		const stored = await browser.storage.local.get("nbClipperAuth");
+		if (stored.nbClipperAuth &&
+			(stored.nbClipperAuth.username || stored.nbClipperAuth.email) != (auth.username || auth.email)) {
+			await browser.storage.local.remove(["nbClipperSaveLocation", "nbClipperPopupSelection"]);
 			savedSelection = null;
 		}
-		await browser.storage.local.set({ normandyAuth: auth });
+		await browser.storage.local.set({ nbClipperAuth: auth });
 		passwordInput.value = "";
 		await showSaveForm();
 	} catch (error) {
@@ -152,7 +152,7 @@ async function loadItems(client, selectedItem) {
 }
 
 async function fetchRoute(route, labelKeys, valueKeys, collectionKey) {
-	const response = await fetch(`${apiUrl}/single-file/${route}`, {
+	const response = await fetch(`${apiUrl}/nb-clipper/${route}`, {
 		method: "GET",
 		headers: {
 			Authorization: `Bearer ${auth.token}`
@@ -246,9 +246,9 @@ async function savePage(event) {
 			folderName: clientSelect.value,
 			subFolderName: itemName
 		};
-		await browser.storage.local.set({ normandyPopupSelection: selection });
+		await browser.storage.local.set({ nbClipperPopupSelection: selection });
 		const response = await browser.runtime.sendMessage({
-			method: "ui.normandyPopup.save",
+			method: "ui.nbClipperPopup.save",
 			selection
 		});
 		if (!response || !response.started) {
@@ -263,7 +263,7 @@ async function savePage(event) {
 
 async function handleRequestError(error, fallbackMessage) {
 	if (error.status == 401 || error.status == 403) {
-		await browser.storage.local.remove("normandyAuth");
+		await browser.storage.local.remove("nbClipperAuth");
 		showLoginForm("Your session expired. Please log in again.");
 		return;
 	}

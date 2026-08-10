@@ -182,25 +182,25 @@ export default [{
 		plugins: [terser()]
 	}]
 }, {
-	input: ["src/ui/bg/ui-normandy-popup.js"],
+	input: ["src/ui/bg/ui-nb-clipper-popup.js"],
 	output: [{
-		file: "lib/ui-normandy-popup.js",
+		file: "lib/ui-nb-clipper-popup.js",
 		format: "iife",
 		plugins: [terser()]
 	}],
 	plugins: PLUGINS
 }, {
-	input: ["src/ui/bg/ui-normandy-sign-in.js"],
+	input: ["src/ui/bg/ui-nb-clipper-sign-in.js"],
 	output: [{
-		file: "lib/ui-normandy-sign-in.js",
+		file: "lib/ui-nb-clipper-sign-in.js",
 		format: "es",
 		plugins: [terser()]
 	}],
 	plugins: PLUGINS
 }, {
-	input: ["src/ui/bg/ui-normandy-save-location.js"],
+	input: ["src/ui/bg/ui-nb-clipper-save-location.js"],
 	output: [{
-		file: "lib/ui-normandy-save-location.js",
+		file: "lib/ui-nb-clipper-save-location.js",
 		format: "es",
 		plugins: [terser()]
 	}],

@@ -56,8 +56,8 @@ const MENU_ID_AUTO_SAVE_DISABLED = "auto-save-disabled";
 const MENU_ID_AUTO_SAVE_TAB = "auto-save-tab";
 const MENU_ID_AUTO_SAVE_UNPINNED = "auto-save-unpinned";
 const MENU_ID_AUTO_SAVE_ALL = "auto-save-all";
-const MENU_ID_NORMANDY_SIGN_IN = "normandy-sign-in";
-const MENU_ID_NORMANDY_SAVE_LOCATION = "normandy-save-location";
+const MENU_ID_NORMANDY_SIGN_IN = "nb-clipper-sign-in";
+const MENU_ID_NORMANDY_SAVE_LOCATION = "nb-clipper-save-location";
 const MENU_ID_EXTRA = "extra";
 const MENU_CREATE_DOMAIN_RULE_MESSAGE = browser.i18n.getMessage("menuCreateDomainRule");
 const MENU_UPDATE_RULE_MESSAGE = browser.i18n.getMessage("menuUpdateRule");
@@ -457,10 +457,10 @@ async function initialize() {
 			await browser.tabs.create({ active: true, url: "/src/ui/pages/pendings.html" });
 		}
 		if (event.menuItemId == MENU_ID_NORMANDY_SIGN_IN) {
-			await browser.tabs.create({ active: true, url: "/src/ui/pages/normandy-sign-in.html" });
+			await browser.tabs.create({ active: true, url: "/src/ui/pages/nb-clipper-sign-in.html" });
 		}
 		if (event.menuItemId == MENU_ID_NORMANDY_SAVE_LOCATION) {
-			await browser.tabs.create({ active: true, url: "/src/ui/pages/normandy-save-location.html" });
+			await browser.tabs.create({ active: true, url: "/src/ui/pages/nb-clipper-save-location.html" });
 		}
 		if (event.menuItemId == MENU_ID_SAVE_SELECTED) {
 			business.saveTabs([tab], { selected: true });
