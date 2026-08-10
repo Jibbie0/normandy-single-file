@@ -227,7 +227,7 @@ async function downloadContent(contents, tab, incognito, message) {
 					filenameConflictAction: message.filenameConflictAction
 				});
 			} else if (message.saveWithNormandyBackend) {
-				response = await saveWithNormandyBackend(message.taskId, message.filename, contents.join(""), tab.url, message.normandyBackendUrl, message.normandyFolderName, message.normandySubfolderName);
+				response = await saveWithNormandyBackend(message.taskId, message.filename, contents.join(""), tab.url, message.normandyBackendUrl, message.nbClipperFolderName, message.nbClipperSubfolderName);
 			} else if (message.saveToRestFormApi) {
 				response = await saveToRestFormApi(
 					message.taskId,
@@ -367,7 +367,7 @@ async function downloadCompressedContent(message, tab) {
 				});
 				await response.pushPromise;
 			} else if (message.saveWithNormandyBackend) {
-				response = await saveWithNormandyBackend(message.taskId, message.filename, blob, tab.url, message.normandyBackendUrl, message.normandyFolderName, message.normandySubfolderName);
+				response = await saveWithNormandyBackend(message.taskId, message.filename, blob, tab.url, message.normandyBackendUrl, message.nbClipperFolderName, message.nbClipperSubfolderName);
 			} else if (message.saveToRestFormApi) {
 				response = await saveToRestFormApi(
 					message.taskId,
@@ -700,10 +700,10 @@ async function saveWithNormandyBackend(taskId, filename, content, sourceUrl, bac
 		if (subfolderName) {
 			formData.append("subFolderName", subfolderName);
 		}
-		const { normandyAuth } = await browser.storage.local.get("normandyAuth");
+		const { nbClipperAuth } = await browser.storage.local.get("nbClipperAuth");
 		const headers = {};
-		if (normandyAuth && normandyAuth.token) {
-			headers.Authorization = `Bearer ${normandyAuth.token}`;
+		if (nbClipperAuth && nbClipperAuth.token) {
+			headers.Authorization = `Bearer ${nbClipperAuth.token}`;
 		}
 		const response = await fetch(backendUrl, {
 			method: "POST",
@@ -731,7 +731,7 @@ function addOriginalUrlLink(content, sourceUrl) {
 	}
 	const escapedUrl = escapeHtml(sourceUrl);
 	const originalUrlElement =
-		`<p data-normandy-original-url="true">` +
+		`<p data-nb-clipper-original-url="true">` +
 		`<strong>Original page:</strong> ` +
 		`<a href="${escapedUrl}">${escapedUrl}</a>` +
 		`</p>`;

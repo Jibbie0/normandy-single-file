@@ -31,8 +31,8 @@ const DEFAULT_PROFILE_NAME = "__Default_Settings__";
 const DISABLED_PROFILE_NAME = "__Disabled_Settings__";
 const REGEXP_RULE_PREFIX = "regexp:";
 const PROFILE_NAME_PREFIX = "profile_";
-const NORMANDY_BACKEND_DEVELOPMENT_URL = "http://localhost:4000/api/single-file";
-const NORMANDY_BACKEND_PRODUCTION_URL = "https://normandy-backend.azurewebsites.net/api/single-file";
+const NORMANDY_BACKEND_DEVELOPMENT_URL = "http://localhost:4000/api/nb-clipper";
+const NORMANDY_BACKEND_PRODUCTION_URL = "https://normandy-backend.azurewebsites.net/api/nb-clipper";
 
 const IS_NOT_SAFARI = !/Safari/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent) || /Vivaldi/.test(navigator.userAgent) || /OPR/.test(navigator.userAgent);
 const IS_MOBILE_FIREFOX = /Mobile.*Firefox/.test(navigator.userAgent);

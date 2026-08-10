@@ -28,8 +28,8 @@ import { queryTabs } from "./../../core/bg/tabs-util.js";
 import * as tabsData from "./../../core/bg/tabs-data.js";
 import { autoSaveIsEnabled } from "../../core/bg/autosave-util.js";
 
-const DEFAULT_ICON_PATH = "/src/ui/resources/normandy_icon_128.png";
-const WAIT_ICON_PATH_PREFIX = "/src/ui/resources/normandy_icon_128_wait";
+const DEFAULT_ICON_PATH = "/src/ui/resources/nb_clipper_icon_128.png";
+const WAIT_ICON_PATH_PREFIX = "/src/ui/resources/nb_clipper_icon_128_wait";
 const BUTTON_DEFAULT_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonDefaultTooltip");
 const BUTTON_BLOCKED_TOOLTIP_MESSAGE = browser.i18n.getMessage("buttonBlockedTooltip");
 const BUTTON_DEFAULT_BADGE_MESSAGE = "";
@@ -147,7 +147,7 @@ function init(businessApi) {
 }
 
 function onMessage(message, sender) {
-	if (message.method == "ui.normandyPopup.save") {
+	if (message.method == "ui.nbClipperPopup.save") {
 		return saveFromPopup(message.selection);
 	}
 	if (message.method.endsWith(".processInit")) {
@@ -188,8 +188,8 @@ async function saveFromPopup(selection) {
 	}
 	await business.saveTabs([tab], {
 		saveWithNormandyBackend: true,
-		normandyFolderName: selection.folderName,
-		normandySubfolderName: selection.subFolderName
+		nbClipperFolderName: selection.folderName,
+		nbClipperSubfolderName: selection.subFolderName
 	});
 	return { started: true };
 }

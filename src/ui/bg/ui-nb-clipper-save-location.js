@@ -12,27 +12,27 @@ backendUrlOutput.textContent = backendUrl;
 await loadLocations();
 
 async function loadLocations() {
-	const { normandyAuth, normandySaveLocation } = await browser.storage.local.get(["normandyAuth", "normandySaveLocation"]);
-	if (!normandyAuth || !normandyAuth.token) {
+	const { nbClipperAuth, nbClipperSaveLocation } = await browser.storage.local.get(["nbClipperAuth", "nbClipperSaveLocation"]);
+	if (!nbClipperAuth || !nbClipperAuth.token) {
 		setStatus("Sign in to the Normandy backend before choosing a save location.", "error");
 		return;
 	}
 	try {
-		const response = await fetch(`${backendUrl}/single-file/save-locations`, {
+		const response = await fetch(`${backendUrl}/nb-clipper/save-locations`, {
 			method: "POST",
 			headers: {
-				Authorization: `Bearer ${normandyAuth.token}`,
+				Authorization: `Bearer ${nbClipperAuth.token}`,
 				"Content-Type": "application/json"
 			},
 			body: JSON.stringify({
-				email: normandyAuth.email
+				email: nbClipperAuth.email
 			})
 		});
 		const responseBody = await response.json();
 		if (!response.ok) {
 			throw new Error(responseBody.message || `Could not load save locations (HTTP ${response.status}).`);
 		}
-		renderLocations(responseBody.items || [], normandySaveLocation);
+		renderLocations(responseBody.items || [], nbClipperSaveLocation);
 	} catch (error) {
 		setStatus(error.message || "Could not load save locations.", "error");
 	}
@@ -55,7 +55,7 @@ function renderLocations(items, selectedLocation) {
 		}
 		button.addEventListener("click", async () => {
 			await browser.storage.local.set({
-				normandySaveLocation: {
+				nbClipperSaveLocation: {
 					displayName: item.displayName,
 					msLink: item.msLink
 				}

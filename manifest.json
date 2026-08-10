@@ -3,11 +3,11 @@
 	"author": "Gildas Lormeau",
 	"homepage_url": "https://www.getsinglefile.com",
 	"icons": {
-		"16": "src/ui/resources/normandy_icon_16.png",
-		"32": "src/ui/resources/normandy_icon_32.png",
-		"48": "src/ui/resources/normandy_icon_48.png",
-		"64": "src/ui/resources/normandy_icon_64.png",
-		"128": "src/ui/resources/normandy_icon_128.png"
+		"16": "src/ui/resources/nb_clipper_icon_16.png",
+		"32": "src/ui/resources/nb_clipper_icon_32.png",
+		"48": "src/ui/resources/nb_clipper_icon_48.png",
+		"64": "src/ui/resources/nb_clipper_icon_64.png",
+		"128": "src/ui/resources/nb_clipper_icon_128.png"
 	},
 	"version": "1.22.98",
 	"description": "__MSG_extensionDescription__",
@@ -60,7 +60,7 @@
 		"browser_style": true,
 		"default_title": "NB Clipper",
 		"default_panel": "src/ui/pages/panel.html",
-		"default_icon": "src/ui/resources/normandy_icon_128.png",
+		"default_icon": "src/ui/resources/nb_clipper_icon_128.png",
 		"open_at_install": false
 	},
 	"options_ui": {
@@ -69,13 +69,13 @@
 		"open_in_tab": false
 	},
 	"browser_action": {
-		"default_popup": "src/ui/pages/normandy-popup.html",
+		"default_popup": "src/ui/pages/nb-clipper-popup.html",
 		"default_icon": {
-			"16": "src/ui/resources/normandy_icon_16.png",
-			"32": "src/ui/resources/normandy_icon_32.png",
-			"48": "src/ui/resources/normandy_icon_48.png",
-			"64": "src/ui/resources/normandy_icon_64.png",
-			"128": "src/ui/resources/normandy_icon_128.png"
+			"16": "src/ui/resources/nb_clipper_icon_16.png",
+			"32": "src/ui/resources/nb_clipper_icon_32.png",
+			"48": "src/ui/resources/nb_clipper_icon_48.png",
+			"64": "src/ui/resources/nb_clipper_icon_64.png",
+			"128": "src/ui/resources/nb_clipper_icon_128.png"
 		},
 		"default_title": "__MSG_buttonDefaultTooltip__"
 	},
