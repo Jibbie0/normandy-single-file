@@ -14,6 +14,9 @@ const itemSelect = document.getElementById("itemSelect");
 const customItemFields = document.getElementById("customItemFields");
 const customItemInput = document.getElementById("customItemInput");
 const saveButton = document.getElementById("saveButton");
+const signedInActions = document.getElementById("signedInActions");
+const settingsButton = document.getElementById("settingsButton");
+const logoutButton = document.getElementById("logoutButton");
 const status = document.getElementById("status");
 
 let auth;
@@ -25,6 +28,8 @@ saveForm.addEventListener("submit", savePage);
 clientSelect.addEventListener("change", clientChanged);
 itemSelect.addEventListener("change", itemChanged);
 customItemInput.addEventListener("input", refreshSaveButton);
+settingsButton.addEventListener("click", openSettings);
+logoutButton.addEventListener("click", logout);
 
 initialize();
 
@@ -43,9 +48,27 @@ async function initialize() {
 	}
 }
 
+async function openSettings() {
+	await browser.runtime.openOptionsPage();
+	window.close();
+}
+
+async function logout() {
+	await browser.storage.local.remove([
+		"nbClipperAuth",
+		"nbClipperSaveLocation",
+		"nbClipperPopupSelection"
+	]);
+	auth = null;
+	savedSelection = null;
+	passwordInput.value = "";
+	showLoginForm("Logged out. Log in with your Normandy account.");
+}
+
 function showLoginForm(message) {
 	auth = null;
 	saveForm.hidden = true;
+	signedInActions.hidden = true;
 	loginForm.hidden = false;
 	setStatus(message || "Log in with your Normandy account.");
 	usernameInput.focus();
@@ -54,6 +77,7 @@ function showLoginForm(message) {
 async function showSaveForm() {
 	loginForm.hidden = true;
 	saveForm.hidden = false;
+	signedInActions.hidden = false;
 	setStatus("Loading clients...");
 	setSelectMessage(clientSelect, "Loading clients...");
 	setSelectMessage(itemSelect, "Select a client first");

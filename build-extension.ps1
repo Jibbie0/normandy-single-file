@@ -11,7 +11,7 @@ $distDirectory = Join-Path $projectDirectory "dist"
 $temporaryRoot = Join-Path ([IO.Path]::GetTempPath()) ("nb-clipper-build-" + [guid]::NewGuid().ToString("N"))
 $chromeStage = Join-Path $temporaryRoot "chrome"
 $firefoxStage = Join-Path $temporaryRoot "firefox"
-$chromeArchive = Join-Path $distDirectory "nb-clipper-chrome.zip"
+$chromeArchive = Join-Path $distDirectory "nb-clipper-chrome-mv3-preview.zip"
 $firefoxArchive = Join-Path $distDirectory "nb-clipper-firefox.zip"
 
 function Invoke-CheckedCommand {
@@ -112,13 +112,10 @@ try {
 	Copy-ExtensionFiles $chromeStage
 	Copy-ExtensionFiles $firefoxStage
 
-	# Chrome ignores Firefox-only extension metadata more gracefully when it is
-	# omitted from the packaged manifest.
-	$chromeManifestPath = Join-Path $chromeStage "manifest.json"
-	$chromeManifest = Get-Content -LiteralPath $chromeManifestPath -Raw | ConvertFrom-Json
-	$chromeManifest.PSObject.Properties.Remove("sidebar_action")
-	$chromeManifest.PSObject.Properties.Remove("browser_specific_settings")
-	$chromeManifest | ConvertTo-Json -Depth 100 | Set-Content -LiteralPath $chromeManifestPath -Encoding UTF8
+	# Chromium is migrated independently so Firefox can keep using the proven
+	# Manifest V2 package while the MV3 service-worker port is being tested.
+	Copy-Item -LiteralPath (Join-Path $projectDirectory "manifest.mv3.json") `
+		-Destination (Join-Path $chromeStage "manifest.json") -Force
 
 	# Firefox uses the web authentication flow selected by the original Unix
 	# packaging script. Change only the staged copy.

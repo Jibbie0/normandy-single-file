@@ -78,6 +78,13 @@ async function sendResponse(tabId, requestId, response) {
 }
 
 function fetchResource(url, options = {}, includeRequestId) {
+	if (typeof XMLHttpRequest == "undefined") {
+		return fetchResourceMV3(url, options);
+	}
+	return fetchResourceXHR(url, options, includeRequestId);
+}
+
+function fetchResourceXHR(url, options = {}, includeRequestId) {
 	return new Promise((resolve, reject) => {
 		const xhrRequest = new XMLHttpRequest();
 		xhrRequest.withCredentials = true;
@@ -116,6 +123,44 @@ function fetchResource(url, options = {}, includeRequestId) {
 		}
 		xhrRequest.send();
 	});
+}
+
+async function fetchResourceMV3(url, options = {}) {
+	const fetchOptions = {
+		cache: "no-store",
+		credentials: "include",
+		headers: options.headers
+	};
+	let response = await fetch(url, fetchOptions);
+	if (options.referrer && (response.status == 401 || response.status == 403 || response.status == 404) && browser.declarativeNetRequest) {
+		const ruleId = Math.floor(Math.random() * 1000000000) + 1;
+		try {
+			await browser.declarativeNetRequest.updateSessionRules({
+				addRules: [{
+					id: ruleId,
+					priority: 1,
+					action: {
+						type: "modifyHeaders",
+						requestHeaders: [{ header: "Referer", operation: "set", value: options.referrer }]
+					},
+					condition: {
+						urlFilter: url,
+						resourceTypes: ["xmlhttprequest"]
+					}
+				}]
+			});
+			response = await fetch(url, fetchOptions);
+		} finally {
+			await browser.declarativeNetRequest.updateSessionRules({ removeRuleIds: [ruleId] }).catch(() => {});
+		}
+	}
+	const arrayBuffer = await response.arrayBuffer();
+	return {
+		arrayBuffer,
+		array: Array.from(new Uint8Array(arrayBuffer)),
+		headers: { "content-type": response.headers.get("content-type") },
+		status: response.status
+	};
 }
 
 function setReferrer(requestId, referrer) {

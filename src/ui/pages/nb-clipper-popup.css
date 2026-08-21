@@ -62,3 +62,13 @@ button {
 #status.error {
 	color: #c62828;
 }
+
+.signed-in-actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.secondary-button {
+	margin-top: 0;
+}

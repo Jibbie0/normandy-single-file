@@ -34,15 +34,16 @@ if (typeof globalThis == "undefined") {
 
 	if ((!globalThis.browser || NON_COMPLIANT_IMPLEMENTATION) && globalThis.chrome) {
 		const nativeAPI = globalThis.chrome;
+		const nativeAction = nativeAPI.action || nativeAPI.browserAction;
 		globalThis.__defineGetter__("browser", () => ({
 			browserAction: {
 				onClicked: {
-					addListener: listener => nativeAPI.browserAction.onClicked.addListener(listener)
+					addListener: listener => nativeAction.onClicked.addListener(listener)
 				},
 				setBadgeText: options => new Promise((resolve, reject) => {
 					if (!FEATURE_TESTS["browserAction.setBadgeText"] || !FEATURE_TESTS["browserAction.setBadgeText"].callbackNotSupported) {
 						try {
-							nativeAPI.browserAction.setBadgeText(options, () => {
+							nativeAction.setBadgeText(options, () => {
 								if (nativeAPI.runtime.lastError) {
 									reject(nativeAPI.runtime.lastError);
 								} else {
@@ -55,7 +56,7 @@ if (typeof globalThis == "undefined") {
 						}
 					}
 					if (FEATURE_TESTS["browserAction.setBadgeText"] && FEATURE_TESTS["browserAction.setBadgeText"].callbackNotSupported) {
-						nativeAPI.browserAction.setBadgeText(options);
+						nativeAction.setBadgeText(options);
 						if (nativeAPI.runtime.lastError) {
 							reject(nativeAPI.runtime.lastError);
 						} else {
@@ -66,7 +67,7 @@ if (typeof globalThis == "undefined") {
 				setBadgeBackgroundColor: options => new Promise((resolve, reject) => {
 					if (!FEATURE_TESTS["browserAction.setBadgeBackgroundColor"] || !FEATURE_TESTS["browserAction.setBadgeBackgroundColor"].callbackNotSupported) {
 						try {
-							nativeAPI.browserAction.setBadgeBackgroundColor(options, () => {
+							nativeAction.setBadgeBackgroundColor(options, () => {
 								if (nativeAPI.runtime.lastError) {
 									reject(nativeAPI.runtime.lastError);
 								} else {
@@ -79,7 +80,7 @@ if (typeof globalThis == "undefined") {
 						}
 					}
 					if (FEATURE_TESTS["browserAction.setBadgeBackgroundColor"] && FEATURE_TESTS["browserAction.setBadgeBackgroundColor"].callbackNotSupported) {
-						nativeAPI.browserAction.setBadgeBackgroundColor(options);
+						nativeAction.setBadgeBackgroundColor(options);
 						if (nativeAPI.runtime.lastError) {
 							reject(nativeAPI.runtime.lastError);
 						} else {
@@ -90,7 +91,7 @@ if (typeof globalThis == "undefined") {
 				setTitle: options => new Promise((resolve, reject) => {
 					if (!FEATURE_TESTS["browserAction.setTitle"] || !FEATURE_TESTS["browserAction.setTitle"].callbackNotSupported) {
 						try {
-							nativeAPI.browserAction.setTitle(options, () => {
+							nativeAction.setTitle(options, () => {
 								if (nativeAPI.runtime.lastError) {
 									reject(nativeAPI.runtime.lastError);
 								} else {
@@ -103,7 +104,7 @@ if (typeof globalThis == "undefined") {
 						}
 					}
 					if (FEATURE_TESTS["browserAction.setTitle"] && FEATURE_TESTS["browserAction.setTitle"].callbackNotSupported) {
-						nativeAPI.browserAction.setTitle(options);
+						nativeAction.setTitle(options);
 						if (nativeAPI.runtime.lastError) {
 							reject(nativeAPI.runtime.lastError);
 						} else {
@@ -114,7 +115,7 @@ if (typeof globalThis == "undefined") {
 				setIcon: options => new Promise((resolve, reject) => {
 					if (!FEATURE_TESTS["browserAction.setIcon"] || !FEATURE_TESTS["browserAction.setIcon"].callbackNotSupported) {
 						try {
-							nativeAPI.browserAction.setIcon(options, () => {
+							nativeAction.setIcon(options, () => {
 								if (nativeAPI.runtime.lastError) {
 									reject(nativeAPI.runtime.lastError);
 								} else {
@@ -127,7 +128,7 @@ if (typeof globalThis == "undefined") {
 						}
 					}
 					if (FEATURE_TESTS["browserAction.setIcon"] && FEATURE_TESTS["browserAction.setIcon"].callbackNotSupported) {
-						nativeAPI.browserAction.setIcon(options);
+						nativeAction.setIcon(options);
 						if (nativeAPI.runtime.lastError) {
 							reject(nativeAPI.runtime.lastError);
 						} else {
@@ -360,6 +361,17 @@ if (typeof globalThis == "undefined") {
 				get lastError() {
 					return nativeAPI.runtime.lastError;
 				}
+			},
+			scripting: nativeAPI.scripting && {
+				executeScript: options => new Promise((resolve, reject) => {
+					nativeAPI.scripting.executeScript(options, results => {
+						if (nativeAPI.runtime.lastError) {
+							reject(nativeAPI.runtime.lastError);
+						} else {
+							resolve(results);
+						}
+					});
+				})
 			},
 			storage: {
 				local: {

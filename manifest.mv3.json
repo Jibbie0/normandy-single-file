@@ -1,0 +1,161 @@
+{
+	"name": "NB Clipper",
+	"author": "Gildas Lormeau",
+	"homepage_url": "https://www.getsinglefile.com",
+	"icons": {
+		"16": "src/ui/resources/nb_clipper_icon_16.png",
+		"32": "src/ui/resources/nb_clipper_icon_32.png",
+		"48": "src/ui/resources/nb_clipper_icon_48.png",
+		"64": "src/ui/resources/nb_clipper_icon_64.png",
+		"128": "src/ui/resources/nb_clipper_icon_128.png"
+	},
+	"version": "1.22.98",
+	"description": "__MSG_extensionDescription__",
+	"content_scripts": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"run_at": "document_start",
+			"js": [
+				"lib/chrome-browser-polyfill.js",
+				"lib/single-file-frames.js",
+				"lib/single-file-extension-frames.js"
+			],
+			"all_frames": true,
+			"match_about_blank": true,
+			"match_origin_as_fallback": true
+		},
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"run_at": "document_start",
+			"js": [
+				"lib/single-file-hooks-frames.js"
+			],
+			"all_frames": true,
+			"match_about_blank": true,
+			"match_origin_as_fallback": true,
+			"world": "MAIN"
+		},
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"run_at": "document_start",
+			"js": [
+				"lib/web-stream.js",
+				"lib/chrome-browser-polyfill.js",
+				"lib/single-file-bootstrap.js",
+				"lib/single-file-extension-bootstrap.js",
+				"lib/single-file-infobar.js"
+			]
+		}
+	],
+	"background": {
+		"service_worker": "src/core/bg/mv3-service-worker.js"
+	},
+	"options_ui": {
+		"browser_style": true,
+		"page": "src/ui/pages/options.html",
+		"open_in_tab": false
+	},
+	"commands": {
+		"save-selected-tabs": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+Y"
+			},
+			"description": "__MSG_commandSaveSelectedTabs__"
+		},
+		"save-all-tabs": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+U"
+			},
+			"description": "__MSG_commandSaveAllTabs__"
+		},
+		"custom-command-0": {
+			"description": "__MSG_commandCustomShortcut0__"
+		},
+		"custom-command-1": {
+			"description": "__MSG_commandCustomShortcut1__"
+		},
+		"custom-command-2": {
+			"description": "__MSG_commandCustomShortcut2__"
+		},
+		"custom-command-3": {
+			"description": "__MSG_commandCustomShortcut3__"
+		},
+		"custom-command-4": {
+			"description": "__MSG_commandCustomShortcut4__"
+		},
+		"custom-command-5": {
+			"description": "__MSG_commandCustomShortcut5__"
+		},
+		"custom-command-6": {
+			"description": "__MSG_commandCustomShortcut6__"
+		},
+		"custom-command-7": {
+			"description": "__MSG_commandCustomShortcut7__"
+		},
+		"custom-command-8": {
+			"description": "__MSG_commandCustomShortcut8__"
+		},
+		"custom-command-9": {
+			"description": "__MSG_commandCustomShortcut9__"
+		}
+	},
+	"web_accessible_resources": [
+		{
+			"matches": [
+				"<all_urls>"
+			],
+			"resources": [
+				"lib/single-file-infobar.js",
+				"lib/single-file-extension-editor.js",
+				"lib/single-file-extension-editor-helper.js",
+				"lib/single-file-zip.min.js",
+				"lib/single-file-z-worker.js",
+				"lib/web-stream.js",
+				"src/lib/readability/Readability.js",
+				"src/lib/readability/Readability-readerable.js",
+				"src/ui/pages/editor-note-web.css",
+				"src/ui/pages/editor-mask-web.css",
+				"src/ui/pages/editor-frame-web.css"
+			]
+		}
+	],
+	"permissions": [
+		"contextMenus",
+		"downloads",
+		"storage",
+		"tabs",
+		"activeTab",
+		"scripting",
+		"declarativeNetRequest"
+	],
+	"optional_permissions": [
+		"identity",
+		"clipboardWrite",
+		"nativeMessaging",
+		"bookmarks",
+		"webRequest"
+	],
+	"host_permissions": [
+		"<all_urls>"
+	],
+	"incognito": "spanning",
+	"manifest_version": 3,
+	"default_locale": "en",
+	"action": {
+		"default_popup": "src/ui/pages/nb-clipper-popup.html",
+		"default_icon": {
+			"16": "src/ui/resources/nb_clipper_icon_16.png",
+			"32": "src/ui/resources/nb_clipper_icon_32.png",
+			"48": "src/ui/resources/nb_clipper_icon_48.png",
+			"64": "src/ui/resources/nb_clipper_icon_64.png",
+			"128": "src/ui/resources/nb_clipper_icon_128.png"
+		},
+		"default_title": "__MSG_buttonDefaultTooltip__"
+	}
+}

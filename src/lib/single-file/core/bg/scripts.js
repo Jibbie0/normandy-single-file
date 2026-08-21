@@ -43,6 +43,9 @@ export {
 };
 
 async function inject(tabId, options) {
+	if (browser.scripting && browser.scripting.executeScript) {
+		return injectManifestV3(tabId, options);
+	}
 	await initScripts(options);
 	let scriptsInjected;
 	if (!options.removeFrames) {
@@ -64,6 +67,44 @@ async function inject(tabId, options) {
 		if (options.frameId) {
 			await browser.tabs.executeScript(tabId, { code: "document.documentElement.dataset.requestedFrameId = true", frameId: options.frameId, matchAboutBlank: true, runAt: "document_start" });
 		}
+	}
+	return scriptsInjected;
+}
+
+async function injectManifestV3(tabId, options) {
+	const extensionScriptFiles = options.extensionScriptFiles || [];
+	if (extensionScriptFiles.some(scriptFile => typeof scriptFile != "string")) {
+		throw new Error("Manifest V3 only supports file-based extensionScriptFiles");
+	}
+	let scriptsInjected;
+	if (!options.removeFrames) {
+		try {
+			await browser.scripting.executeScript({
+				target: { tabId, allFrames: true },
+				files: frameScriptFiles
+			});
+			// eslint-disable-next-line no-unused-vars
+		} catch (error) {
+			// ignored
+		}
+	}
+	try {
+		await browser.scripting.executeScript({
+			target: { tabId },
+			files: contentScriptFiles.concat(extensionScriptFiles)
+		});
+		scriptsInjected = true;
+		// eslint-disable-next-line no-unused-vars
+	} catch (error) {
+		// ignored
+	}
+	if (scriptsInjected && options.frameId) {
+		await browser.scripting.executeScript({
+			target: { tabId, frameIds: [options.frameId] },
+			func: () => {
+				document.documentElement.dataset.requestedFrameId = true;
+			}
+		});
 	}
 	return scriptsInjected;
 }

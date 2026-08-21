@@ -112,7 +112,9 @@ const BUTTON_STATES = {
 
 let business;
 
-browser.browserAction.onClicked.addListener(async tab => {
+const actionApi = browser.action || browser.browserAction;
+
+actionApi.onClicked.addListener(async tab => {
 	const highlightedTabs = await queryTabs({ currentWindow: true, highlighted: true });
 	if (highlightedTabs.length <= 1) {
 		toggleSaveTab(tab);
@@ -283,10 +285,10 @@ async function refreshAsync(tabId, state) {
 
 async function refreshProperty(tabId, browserActionMethod, browserActionParameter) {
 	const actionMethodSupported = browserActionMethod != "setBadgeBackgroundColor" || config.BADGE_COLOR_SUPPORTED;
-	if (browser.browserAction[browserActionMethod] && actionMethodSupported) {
+	if (actionApi[browserActionMethod] && actionMethodSupported) {
 		const parameter = JSON.parse(JSON.stringify(browserActionParameter));
 		parameter.tabId = tabId;
-		await browser.browserAction[browserActionMethod](parameter);
+		await actionApi[browserActionMethod](parameter);
 	}
 }
 
