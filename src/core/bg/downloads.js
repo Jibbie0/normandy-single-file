@@ -40,6 +40,7 @@ import { MCP } from "./../../lib/mcp/mcp.js";
 import { download } from "./download-util.js";
 import * as yabson from "./../../lib/yabson/yabson.js";
 import { RestFormApi } from "../../lib/../lib/rest-form-api/index.js";
+import { captureFullPagePng } from "./nb-clipper-screenshot.js";
 
 const partialContents = new Map();
 const tabData = new Map();
@@ -227,7 +228,7 @@ async function downloadContent(contents, tab, incognito, message) {
 					filenameConflictAction: message.filenameConflictAction
 				});
 			} else if (message.saveWithNormandyBackend) {
-				response = await saveWithNormandyBackend(message.taskId, message.filename, contents.join(""), tab.url, message.normandyBackendUrl, message.nbClipperFolderName, message.nbClipperSubfolderName);
+				response = await saveWithNormandyBackend(message.taskId, message.filename, contents.join(""), tab.url, message.normandyBackendUrl, message.nbClipperFolderName, message.nbClipperSubfolderName, tab.id);
 			} else if (message.saveToRestFormApi) {
 				response = await saveToRestFormApi(
 					message.taskId,
@@ -367,7 +368,7 @@ async function downloadCompressedContent(message, tab) {
 				});
 				await response.pushPromise;
 			} else if (message.saveWithNormandyBackend) {
-				response = await saveWithNormandyBackend(message.taskId, message.filename, blob, tab.url, message.normandyBackendUrl, message.nbClipperFolderName, message.nbClipperSubfolderName);
+				response = await saveWithNormandyBackend(message.taskId, message.filename, blob, tab.url, message.normandyBackendUrl, message.nbClipperFolderName, message.nbClipperSubfolderName, tab.id);
 			} else if (message.saveToRestFormApi) {
 				response = await saveToRestFormApi(
 					message.taskId,
@@ -678,7 +679,7 @@ async function downloadPageForeground(taskId, filename, content, mimeType, tabId
 	return browser.tabs.sendMessage(tabId, { method: "content.download" });
 }
 
-async function saveWithNormandyBackend(taskId, filename, content, sourceUrl, backendUrl, folderName, subfolderName) {
+async function saveWithNormandyBackend(taskId, filename, content, sourceUrl, backendUrl, folderName, subfolderName, tabId) {
 	const controller = new AbortController();
 	try {
 		if (!backendUrl) {
@@ -689,10 +690,16 @@ async function saveWithNormandyBackend(taskId, filename, content, sourceUrl, bac
 			return;
 		}
 		business.setCancelCallback(taskId, () => controller.abort());
+		const screenshotBlob = await captureFullPagePng(tabId);
+		const refreshedTaskInfo = business.getTaskInfo(taskId);
+		if (refreshedTaskInfo && refreshedTaskInfo.cancelled) {
+			return;
+		}
 		const formData = new FormData();
 		const uploadContent = typeof content == "string" ? addOriginalUrlLink(content, sourceUrl) : content;
 		const blob = uploadContent instanceof Blob ? uploadContent : new Blob([uploadContent], { type: "text/html" });
 		formData.append("file", blob, filename);
+		formData.append("screenshot", screenshotBlob, getScreenshotFilename(filename));
 		formData.append("url", sourceUrl);
 		if (folderName) {
 			formData.append("folderName", folderName);
@@ -723,6 +730,10 @@ async function saveWithNormandyBackend(taskId, filename, content, sourceUrl, bac
 	} catch (error) {
 		throw new Error(error.message + " (Normandy backend)");
 	}
+}
+
+function getScreenshotFilename(filename) {
+	return String(filename || "screenshot.html").replace(/\.[^./\\]+$/, "") + ".png";
 }
 
 function addOriginalUrlLink(content, sourceUrl) {

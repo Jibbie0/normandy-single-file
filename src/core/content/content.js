@@ -60,6 +60,7 @@ if (!bootstrap || !bootstrap.initializedSingleFile) {
 			message.method == "content.getSelectedLinks" ||
 			message.method == "content.error" ||
 			message.method == "content.prompt" ||
+			message.method == "content.getScreenshotMetrics" ||
 			message.method == "content.beginScrollTo" ||
 			message.method == "content.scrollTo" ||
 			message.method == "content.endScrollTo") {
@@ -127,6 +128,16 @@ async function onMessage(message) {
 		}
 		if (message.method == "content.prompt") {
 			return ui.prompt(message.message, message.value);
+		}
+		if (message.method == "content.getScreenshotMetrics") {
+			const documentElement = document.documentElement;
+			const body = document.body;
+			return {
+				width: Math.max(documentElement.scrollWidth, body ? body.scrollWidth : 0, globalThis.innerWidth),
+				height: Math.max(documentElement.scrollHeight, body ? body.scrollHeight : 0, globalThis.innerHeight),
+				innerWidth: globalThis.innerWidth,
+				innerHeight: globalThis.innerHeight
+			};
 		}
 		if (message.method == "content.beginScrollTo") {
 			scrollY = globalThis.scrollY;
